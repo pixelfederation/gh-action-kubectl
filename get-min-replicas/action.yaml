@@ -1,0 +1,19 @@
+name: Kubectl get min replicas
+description: Get min replicas from k8s hpa
+author: Tomas Hulata <hulata@sysart.tech>
+runs:
+  using: node12
+  main: main.js
+inputs:
+  namespace:
+    description: K8s namespace to use
+    required: true
+  regexp:
+    description: Regexp to match hpa
+    required: true
+  kubeconfig:
+    description: Path to kubeconfig
+    required: false
+outputs:
+  replicas:
+    description: Min replicas
