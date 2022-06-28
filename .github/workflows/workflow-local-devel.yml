@@ -1,8 +1,7 @@
-name: Main workflow
+name: Local devel workflow
 
 on:
-  - pull_request
-  - push
+  workflow_dispatch:
 
 jobs:
   build:
