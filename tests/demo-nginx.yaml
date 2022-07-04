@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-nginx
+  labels:
+    k8s-app: demo-nginx
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      k8s-app: demo-nginx
+  template:
+    metadata:
+      labels:
+        k8s-app: demo-nginx
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 10m
+            memory: 20Mi
+          requests:
+            cpu: 10m
+            memory: 20Mi

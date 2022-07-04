@@ -16,10 +16,25 @@ jobs:
 
       - uses: engineerd/setup-kind@v0.5.0
 
-      - name: Testing
+      - name: Check cluster
         run: |
           kubectl cluster-info
           kubectl get pods -n kube-system
           echo "current-context:" $(kubectl config current-context)
           echo "environment-kubeconfig:" ${KUBECONFIG}
 
+      - name: Deploy nginx
+        run: |
+          kubectl apply -f tests/demo-nginx.yaml
+          kubectl wait pods -n default -l k8s-app=demo-nginx --for condition=Ready --timeout=300s
+
+      - name: Get min replicas
+        id: get-min
+        uses: pixelfederation/gh-action-kubectl/get-min-replicas@v0.1
+        with:
+          namespace: default
+          regexp: ".*nginx.*"
+
+      - name: Print min replicas output
+        run: |
+          echo "${{ steps.get-min.outputs.replicas }}"
