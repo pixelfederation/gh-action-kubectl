@@ -22,19 +22,12 @@ jobs:
           kubectl cluster-info
           kubectl get pods -n kube-system
           echo "current-context:" $(kubectl config current-context)
-          echo "environment-kubeconfig:" ${KUBECONFIG}
 
       - name: Deploy nginx
         run: |
           kubectl apply -f tests/demo-nginx.yaml
-          kubectl -n default get pods
-          sleep 30
-          kubectl -n default get pods
-          sleep 30
-          kubectl -n default get pods
-          kubectl describe pod -n default -l k8s-app=demo-nginx
-          kubectl logs  -n default -l k8s-app=demo-nginx
           kubectl wait pods -n default -l k8s-app=demo-nginx --for condition=Ready --timeout=300s
+          kubectl -n default get pods
 
       - name: Get min replicas
         id: get-min
