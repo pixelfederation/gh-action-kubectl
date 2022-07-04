@@ -31,7 +31,7 @@ jobs:
 
       - name: Get min replicas
         id: get-min
-        uses: pixelfederation/gh-action-kubectl/get-min-replicas@v0.1
+        uses: pixelfederation/gh-action-kubectl/get-min-replicas@main
         with:
           namespace: default
           regexp: ".*nginx.*"
