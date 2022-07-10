@@ -10,7 +10,7 @@
     "fmt:check": "prettier --check .",
     "typecheck": "tsc",
     "lint": "eslint \"**/*.ts\" --cache",
-    "build": "esbuild lib/get-min-replicas/main.ts lib/change-hpa-target/main.ts --bundle --outdir=. --target=node12 --platform=node"
+    "build": "esbuild src/get-replicas/main.ts src/set-replicas/main.ts  src/set-min-replicas/main.ts src/change-ingress-class/main.ts --bundle --outdir=. --target=node12 --platform=node"
   },
   "dependencies": {
     "@actions/core": "1.2.6",

@@ -1,0 +1,23 @@
+name: Kubectl get replicas
+description: Get replicas from k8s deployment
+author: Tomas Hulata <thulata@pixelfederation.com>
+runs:
+  using: node12
+  main: main.js
+inputs:
+  directory:
+    description: Working directory
+    required: false
+    default: "."
+  namespace:
+    description: K8s namespace to use
+    required: true
+  regexp:
+    description: Regexp to match deployment
+    required: true
+  kubeconfig:
+    description: Path to kubeconfig
+    required: false
+outputs:
+  replicas:
+    description:  Replicas count

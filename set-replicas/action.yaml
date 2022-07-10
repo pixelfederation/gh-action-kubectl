@@ -1,0 +1,23 @@
+name: Kubectl set deploy replicas
+description: Set deploy replicas
+author: Tomas Hulata <thulata@pixelfederation.com>
+runs:
+  using: node12
+  main: main.js
+inputs:
+  directory:
+    description: Working directory
+    required: false
+    default: "."
+  namespace:
+    description: K8s namespace to use
+    required: true
+  regexp:
+    description: Regexp to match hpa
+    required: true
+  kubeconfig:
+    description: Path to kubeconfig
+    required: false
+  replicas:
+    description: Set replicas count
+    required: true

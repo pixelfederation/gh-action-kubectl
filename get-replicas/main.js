@@ -1265,44 +1265,50 @@ var require_exec = __commonJS((exports2) => {
   exports2.exec = exec3;
 });
 
-// lib/get-min-replicas/main.ts
+// src/get-replicas/main.ts
 var core3 = __toModule(require_core());
 
-// lib/kubectl-helper.ts
+// src/kubectl-helper.ts
 var exec = __toModule(require_exec());
 
-// lib/input-helper.ts
+// src/input-helper.ts
 var core = __toModule(require_core());
-var DEFAULT_KUBECONFIG_PATH = "~/.kube/config";
+var DEFAULT_KUBECONFIG_PATH = process.env.HOME + "/.kube/config";
 async function getCommonInputs() {
   const result = {};
   result.kubeconfig = core.getInput("kubeconfig", {required: false}) || DEFAULT_KUBECONFIG_PATH;
   result.namespace = core.getInput("namespace", {required: true});
   result.regexp = core.getInput("regexp", {required: true});
+  result.dir = core.getInput("directory", {required: true});
   return result;
 }
 
-// lib/kubectl-helper.ts
+// src/kubectl-helper.ts
+function getExecOpts(opt) {
+  const options = opt;
+  const out = {data: ""};
+  const err = {data: ""};
+  options.listeners = {
+    stdout: (data) => {
+      out.data += data.toString();
+    },
+    stderr: (data) => {
+      err.data += data.toString();
+    }
+  };
+  return {out, err, options};
+}
 async function kubectlGet(args) {
   let ci;
   let result = [];
   ci = await getCommonInputs();
-  const options = {};
-  let stdOut = "";
-  options.listeners = {
-    stdout: (data) => {
-      stdOut += data.toString();
-    },
-    stderr: (data) => {
-      stdOut += data.toString();
-    }
-  };
+  const opts = getExecOpts({cwd: ci.dir, env: {...process.env, KUBECONFIG: ci.kubeconfig}});
   await exec.exec("kubectl", ["--namespace", ci.namespace, "get"].concat(args).concat([
     "-o",
     "json"
-  ]), options);
+  ]), opts.options);
   const regExp = new RegExp(ci.regexp);
-  for (let item of JSON.parse(stdOut).items) {
+  for (let item of JSON.parse(opts.out.data).items) {
     if (regExp.test(item.metadata.name)) {
       result.push(item);
     }
@@ -1310,24 +1316,24 @@ async function kubectlGet(args) {
   return result;
 }
 
-// lib/get-min-replicas/index.ts
+// src/get-replicas/index.ts
 var core2 = __toModule(require_core());
-async function getMinReplicas() {
+async function getReplicas() {
   let replicas;
   const deploys = await kubectlGet(["deploy"]);
   if (deploys.length === 0) {
-    throw new Error("Failed - getMinReplicas, no deploys matched with regexp");
+    throw new Error("Failed - getReplicas, no deploys matched with regexp");
   }
   if (deploys.length > 1) {
-    throw new Error("Failed - getMinReplicas, multiple deploys matched regexp");
+    throw new Error("Failed - getReplicas, multiple deploys matched regexp");
   }
   core2.setOutput("replicas", deploys[0].spec.replicas);
 }
 
-// lib/get-min-replicas/main.ts
+// src/get-replicas/main.ts
 (async () => {
   try {
-    await getMinReplicas();
+    await getReplicas();
   } catch (err) {
     core3.setFailed(`Action failed with error ${err}`);
   }

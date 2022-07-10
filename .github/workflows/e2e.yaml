@@ -31,7 +31,7 @@ jobs:
 
       - name: Get min replicas
         id: get-min
-        uses: pixelfederation/gh-action-kubectl/get-min-replicas@main
+        uses: ./get-min-replicas
         with:
           namespace: default
           regexp: ".*nginx.*"
@@ -39,3 +39,42 @@ jobs:
       - name: Print min replicas output
         run: |
           echo "${{ steps.get-min.outputs.replicas }}"
+
+      - name: Set min replicas
+        uses: ./set-min-replicas
+        with:
+          namespace: default
+          regexp: ".*nginx.*"
+          replicas: 2
+
+      - name: Prefix ingress class
+        uses: ./change-ingress-class
+        with:
+          namespace: default
+          regexp: ".*nginx.*"
+          class: tombo-
+          mode: prefix
+
+      - name: Strip ingress class
+        uses: ./change-ingress-class
+        with:
+          namespace: echoheaders
+          regexp: ".*nginx.*"
+          class: tombo-
+          mode: strip
+
+      - name: Append ingress class
+        uses: ./change-ingress-class
+        with:
+          namespace: echoheaders
+          regexp: ".*nginx.*"
+          class: -tombo
+          mode: append
+
+      - name: Replace ingress class
+        uses: ./change-ingress-class
+        with:
+          namespace: echoheaders
+          regexp: ".*nginx.*"
+          class: nginx-external
+          mode: replace

@@ -4,50 +4,109 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  init:
     strategy:
       fail-fast: false
       matrix:
         os:
-          - pxfd-linux-amd64
+          - ubuntu-latest
+          #- pxfd-linux-amd64
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+      
+      # - name: Import Secrets
+      #   id: secrets
+      #   uses: hashicorp/vault-action@v2.4.0
+      #   with:
+      #     url: https://vault.kube.dev.pxfd.tech/
+      #     method: kubernetes
+      #     path: kubernetes_shared
+      #     role: action-github-runner
+      #     secrets: |
+      #       secret/pxfd-shared-eks/action-runner-controller/runners_secrets kubeconfig_workload-dev | kubeconfig ;
 
-      - name: Import Secrets
-        id: secrets
-        uses: hashicorp/vault-action@v2.4.0
-        with:
-          url: https://vault.kube.dev.pxfd.tech/
-          method: kubernetes
-          path: kubernetes_shared
-          role: action-github-runner
-          secrets: |
-            secret/pxfd-shared-eks/action-runner-controller/runners_secrets kubeconfig_workload-dev | kubeconfig ;
+      # # Kubernetes config
+      # - name: Create kubernetes config
+      #   shell: bash
+      #   run: |
+      #     mkdir -p /home/runner/.kube
+      #     echo "${{ steps.secrets.outputs.kubeconfig }}" | base64 -d > /home/runner/.kube/config
+      #     chmod 600 ~/.kube/config
 
-      # Kubernetes config
-      - name: Create kubernetes config
-        shell: bash
-        run: |
-          mkdir -p /home/runner/.kube
-          echo "${{ steps.secrets.outputs.kubeconfig }}" | base64 -d > /home/runner/.kube/config
-          chmod 600 ~/.kube/config
 
       - name: Kubectl version
         id: kubectl-version
         run: |
           kubectl version && kubectl get ns
 
-      - name: Get min replicas
-        id: get-min
-        uses: ./get-min-replicas
+      - name: Get replicas
+        id: get-repl
+        uses: ./get-replicas
         with:
           namespace: echoheaders
           regexp: ".*echo.*"
 
       - name: Get the output
         run: |
-          echo "${{ steps.get-min.outputs.replicas }}"
+          echo "${{ steps.get-repl.outputs.replicas }}"
+
+      - name: Set replicas
+        uses: ./set-replicas
+        with:
+          namespace: echoheaders
+          regexp: ".*echo.*"
+          replicas: 2
+  
+      - name: Get replicas
+        id: get-repl2
+        uses: ./get-replicas
+        with:
+          namespace: echoheaders
+          regexp: ".*echo.*"
+
+      - name: Get the output
+        run: |
+          echo "${{ steps.get-repl2.outputs.replicas }}"
+
+      - name: Set min replicas
+        uses: ./set-min-replicas
+        with:
+          namespace: echoheaders
+          regexp: ".*echo.*"
+          replicas: 2
+
+      - name: Prefix ingress class
+        uses: ./change-ingress-class
+        with:
+          namespace: echoheaders
+          regexp: "echoheaders-echoheaders-external"
+          class: tombo-
+          mode: prefix
+
+      - name: Strip ingress class
+        uses: ./change-ingress-class
+        with:
+          namespace: echoheaders
+          regexp: "echoheaders-echoheaders-external"
+          class: tombo-
+          mode: strip
+
+      - name: Append ingress class
+        uses: ./change-ingress-class
+        with:
+          namespace: echoheaders
+          regexp: "echoheaders-echoheaders-external"
+          class: -tombo
+          mode: append
+
+      - name: Replace ingress class
+        uses: ./change-ingress-class
+        with:
+          namespace: echoheaders
+          regexp: "echoheaders-echoheaders-external"
+          class: nginx-external
+          mode: replace

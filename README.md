@@ -7,6 +7,22 @@ workflows.
 
 ### Example workflow
 
+## Inputs
+
+| parameter | description | required | default |
+| - | - | - | - |
+| namespace | K8s namespace to use | `true` |  |
+| regexp | Regexp to match hpa | `true` |  |
+| kubeconfig | Path to kubeconfig | `false` |  |
+
+
+## Outputs
+
+| parameter | description |
+| - | - |
+| replicas | Min replicas |
+
+
 
 ```yml
 - name: Get min replicas

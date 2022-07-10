@@ -1,0 +1,26 @@
+name: Kubectl change ingress class
+description: Channge ingressClassName on k8s ingress object
+author: Tomas Hulata <thulata@pixelfederation.com>
+runs:
+  using: node12
+  main: main.js
+inputs:
+  directory:
+    description: Working directory
+    required: false
+    default: "."
+  namespace:
+    description: K8s namespace to use
+    required: true
+  regexp:
+    description: Regexp to match ingress
+    required: true
+  kubeconfig:
+    description: Path to kubeconfig
+    required: false
+  mode: 
+    description: Use one of prefix, append, replace, strip
+    require: true
+  class:
+    description: String use according `mode` to modify ingressClassName
+    required: true

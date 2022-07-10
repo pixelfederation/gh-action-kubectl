@@ -1,10 +1,14 @@
-name: Kubectl get min replicas
-description: Get min replicas from k8s hpa
-author: Tomas Hulata <hulata@sysart.tech>
+name: Kubectl set hpa min replicas
+description: Set hpa min replicas
+author: Tomas Hulata <thulata@pixelfederation.com>
 runs:
   using: node12
   main: main.js
 inputs:
+  directory:
+    description: Working directory
+    required: false
+    default: "."
   namespace:
     description: K8s namespace to use
     required: true
@@ -14,6 +18,6 @@ inputs:
   kubeconfig:
     description: Path to kubeconfig
     required: false
-outputs:
   replicas:
-    description: Min replicas
+    description: Set replicas count
+    required: true

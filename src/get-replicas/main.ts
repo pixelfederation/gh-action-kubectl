@@ -1,9 +1,9 @@
 import * as core from "@actions/core";
-import { getMinReplicas } from "./index";
+import { getReplicas } from "./index";
 
 (async () => {
   try {
-    await getMinReplicas();
+    await getReplicas();
   } catch (err) {
     core.setFailed(`Action failed with error ${err}`);
   }
