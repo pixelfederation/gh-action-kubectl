@@ -10,13 +10,14 @@
     "fmt:check": "prettier --check .",
     "typecheck": "tsc",
     "lint": "eslint \"**/*.ts\" --cache",
-    "build": "esbuild src/get-replicas/main.ts src/set-replicas/main.ts  src/set-min-replicas/main.ts src/change-ingress-class/main.ts --bundle --outdir=. --target=node12 --platform=node"
+    "build": "esbuild src/get-replicas/main.ts src/set-replicas/main.ts  src/set-min-replicas/main.ts src/change-ingress-class/main.ts src/set-replicas-addons/main.ts --bundle --outdir=. --target=node12 --platform=node"
   },
   "dependencies": {
     "@actions/core": "1.2.6",
     "@actions/exec": "1.0.4",
     "@actions/github": "4.0.0",
-    "@actions/io": "1.0.2"
+    "@actions/io": "1.0.2",
+    "yaml": "^2.1.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "4.23.0",

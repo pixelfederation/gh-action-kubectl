@@ -1,5 +1,5 @@
-name: Kubectl set deploy replicas
-description: Set deploy replicas
+name: Kubectl set addons replicas
+description: Set addons replicas
 author: Tomas Hulata <thulata@pixelfederation.com>
 runs:
   using: node12
@@ -13,11 +13,11 @@ inputs:
     description: K8s namespace to use
     required: true
   regexp:
-    description: Regexp to match deployment
+    description: Regexp prefix to match addon deployment without addon name
     required: true
   kubeconfig:
     description: Path to kubeconfig
     required: false
-  replicas:
+  helm-values-file:
     description: Set replicas count
     required: true

@@ -110,3 +110,29 @@ jobs:
           regexp: "echoheaders-echoheaders-external"
           class: nginx-external
           mode: replace
+
+
+  addons:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Kubectl version
+        id: kubectl-version
+        run: |
+          kubectl config get-contexts
+
+      - name: scale addon
+        uses: ./set-replicas-addons
+        with:
+          namespace: default
+          regexp: "demo-nginx.*"
+          helm-values-file: "tests/dev-values.yaml"

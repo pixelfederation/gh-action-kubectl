@@ -1,0 +1,7 @@
+addons:
+  - name: mq-seq
+    enabled: true
+    replicas: 3
+  - name: mq-seq-cleanup
+    enabled: false
+    replicas: 4
