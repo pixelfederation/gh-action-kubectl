@@ -10,10 +10,10 @@
     "fmt:check": "prettier --check .",
     "typecheck": "tsc",
     "lint": "eslint \"**/*.ts\" --cache",
-    "build": "esbuild src/get-replicas/main.ts src/set-replicas/main.ts  src/set-min-replicas/main.ts src/change-ingress-class/main.ts src/set-replicas-addons/main.ts --bundle --outdir=. --target=node12 --platform=node"
+    "build": "esbuild src/get-replicas/main.ts src/set-replicas/main.ts  src/set-min-replicas/main.ts src/change-ingress-class/main.ts src/set-replicas-addons/main.ts src/set-cronjob-suspend/main.ts --bundle --outdir=. --target=node12 --platform=node"
   },
   "dependencies": {
-    "@actions/core": "1.2.6",
+    "@actions/core": "1.8.2",
     "@actions/exec": "1.0.4",
     "@actions/github": "4.0.0",
     "@actions/io": "1.0.2",

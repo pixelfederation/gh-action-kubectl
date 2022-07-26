@@ -1491,7 +1491,7 @@ var require_core = __commonJS((exports2) => {
     return inputs;
   }
   exports2.getMultilineInput = getMultilineInput;
-  function getBooleanInput(name, options) {
+  function getBooleanInput2(name, options) {
     const trueValue = ["true", "True", "TRUE"];
     const falseValue = ["false", "False", "FALSE"];
     const val = getInput2(name, options);
@@ -1502,12 +1502,12 @@ var require_core = __commonJS((exports2) => {
     throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}
 Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
   }
-  exports2.getBooleanInput = getBooleanInput;
-  function setOutput2(name, value) {
+  exports2.getBooleanInput = getBooleanInput2;
+  function setOutput(name, value) {
     process.stdout.write(os.EOL);
     command_1.issueCommand("set-output", {name}, value);
   }
-  exports2.setOutput = setOutput2;
+  exports2.setOutput = setOutput;
   function setCommandEcho(enabled) {
     command_1.issue("echo", enabled ? "on" : "off");
   }
@@ -1529,10 +1529,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
   }
   exports2.error = error;
-  function warning(message, properties = {}) {
+  function warning2(message, properties = {}) {
     command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
   }
-  exports2.warning = warning;
+  exports2.warning = warning2;
   function notice(message, properties = {}) {
     command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
   }
@@ -2555,11 +2555,11 @@ var require_exec = __commonJS((exports2) => {
   exports2.exec = exec3;
 });
 
-// src/get-replicas/main.ts
+// src/set-cronjob-suspend/main.ts
 var core3 = __toModule(require_core());
 
-// src/kubectl-helper.ts
-var exec = __toModule(require_exec());
+// src/set-cronjob-suspend/index.ts
+var core2 = __toModule(require_core());
 
 // src/input-helper.ts
 var core = __toModule(require_core());
@@ -2574,6 +2574,7 @@ async function getCommonInputs() {
 }
 
 // src/kubectl-helper.ts
+var exec = __toModule(require_exec());
 function getExecOpts(opt) {
   const options = opt;
   const out = {data: ""};
@@ -2605,25 +2606,37 @@ async function kubectlGet(args) {
   }
   return result;
 }
-
-// src/get-replicas/index.ts
-var core2 = __toModule(require_core());
-async function getReplicas() {
-  let replicas;
-  const deploys = await kubectlGet(["deploy"]);
-  if (deploys.length === 0) {
-    throw new Error("Failed - getReplicas, no deploys matched with regexp");
-  }
-  if (deploys.length > 1) {
-    throw new Error("Failed - getReplicas, multiple deploys matched regexp");
-  }
-  core2.setOutput("replicas", deploys[0].spec.replicas);
+async function kubectlPatch(args) {
+  let ci;
+  let result = [];
+  ci = await getCommonInputs();
+  const opts = getExecOpts({cwd: ci.dir, env: {...process.env, KUBECONFIG: ci.kubeconfig}});
+  return exec.exec("kubectl", ["--namespace", ci.namespace, "patch"].concat(args), opts.options);
 }
 
-// src/get-replicas/main.ts
+// src/set-cronjob-suspend/index.ts
+async function setCronjobSuspend() {
+  let ci;
+  ci = await getCommonInputs();
+  const cronjobState = core2.getBooleanInput("suspend-state", {required: true});
+  const cronjobs = await kubectlGet(["cronjobs"]);
+  let directory = ci.dir;
+  if (cronjobs.length === 0) {
+    core2.warning("Failed - setCronjobSuspend, no cronjob matched with regexp");
+  }
+  const promises = [];
+  for (let cronjob of cronjobs) {
+    const cronjobName = cronjob.metadata.name;
+    const patchStr = JSON.stringify({spec: {suspend: cronjobState}});
+    promises.push(kubectlPatch(["cronjob", cronjobName, "--patch", patchStr]));
+  }
+  await Promise.all(promises);
+}
+
+// src/set-cronjob-suspend/main.ts
 (async () => {
   try {
-    await getReplicas();
+    await setCronjobSuspend();
   } catch (err) {
     core3.setFailed(`Action failed with error ${err}`);
   }

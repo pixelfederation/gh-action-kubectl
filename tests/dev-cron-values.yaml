@@ -1,0 +1,7 @@
+jobs:
+  - name: cor-comp
+    enabled: true
+    suspend: true
+  - name: cor-map
+    enabled: true
+    suspend: true
