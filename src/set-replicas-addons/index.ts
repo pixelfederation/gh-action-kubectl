@@ -44,9 +44,13 @@ export async function setReplicasAddons() {
   for(let deploy of deploys) {
     const deployName:string = deploy.metadata.name;
     for(let addon of valuesFileJson.addons) {
-      if ( deployName.endsWith(`-${addon.name}`) && addon.enabled) {
-        const patchStr:string = JSON.stringify({ spec: { replicas: parseInt(addon.replicas) }});
-        promises.push(kubectlPatch(["deploy", deployName, '--patch' , patchStr ]));
+      if(deployName.endsWith(`-${addon.name}`) && addon.enabled) {
+        if('replicas' in addon) {
+          const patchStr:string = JSON.stringify({ spec: { replicas: parseInt(addon.replicas) }});
+          promises.push(kubectlPatch(["deploy", deployName, '--patch' , patchStr ]));
+        } else {
+          core.warning(`scaling addons ${addon.name}, missing replicas in values file, not scaling`);
+        }
       }
     }
   }

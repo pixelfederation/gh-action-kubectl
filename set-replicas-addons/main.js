@@ -257,10 +257,10 @@ var require_core = __commonJS((exports2) => {
     command_1.issue("error", message instanceof Error ? message.toString() : message);
   }
   exports2.error = error;
-  function warning(message) {
+  function warning2(message) {
     command_1.issue("warning", message instanceof Error ? message.toString() : message);
   }
-  exports2.warning = warning;
+  exports2.warning = warning2;
   function info(message) {
     process.stdout.write(message + os.EOL);
   }
@@ -2677,12 +2677,12 @@ var require_log = __commonJS((exports2) => {
     if (logLevel === "debug")
       console.log(...messages);
   }
-  function warn(logLevel, warning) {
+  function warn(logLevel, warning2) {
     if (logLevel === "debug" || logLevel === "warn") {
       if (typeof process !== "undefined" && process.emitWarning)
-        process.emitWarning(warning);
+        process.emitWarning(warning2);
       else
-        console.warn(warning);
+        console.warn(warning2);
     }
   }
   exports2.debug = debug;
@@ -5871,9 +5871,9 @@ var require_composer = __commonJS((exports2) => {
       this.prelude = [];
       this.errors = [];
       this.warnings = [];
-      this.onError = (source, code, message, warning) => {
+      this.onError = (source, code, message, warning2) => {
         const pos = getErrorPos(source);
-        if (warning)
+        if (warning2)
           this.warnings.push(new errors.YAMLWarning(pos, code, message));
         else
           this.errors.push(new errors.YAMLParseError(pos, code, message));
@@ -5932,10 +5932,10 @@ ${cb}` : comment;
         console.dir(token, {depth: null});
       switch (token.type) {
         case "directive":
-          this.directives.add(token.source, (offset, message, warning) => {
+          this.directives.add(token.source, (offset, message, warning2) => {
             const pos = getErrorPos(token);
             pos[0] += offset;
-            this.onError(pos, "BAD_DIRECTIVE", message, warning);
+            this.onError(pos, "BAD_DIRECTIVE", message, warning2);
           });
           this.prelude.push(token.source);
           this.atDirectives = true;
@@ -7888,7 +7888,7 @@ var require_public_api = __commonJS((exports2) => {
     const doc = parseDocument(src, options);
     if (!doc)
       return null;
-    doc.warnings.forEach((warning) => log.warn(doc.options.logLevel, warning));
+    doc.warnings.forEach((warning2) => log.warn(doc.options.logLevel, warning2));
     if (doc.errors.length > 0) {
       if (doc.options.logLevel !== "silent")
         throw doc.errors[0];
@@ -8073,8 +8073,12 @@ async function setReplicasAddons() {
     const deployName = deploy.metadata.name;
     for (let addon of valuesFileJson.addons) {
       if (deployName.endsWith(`-${addon.name}`) && addon.enabled) {
-        const patchStr = JSON.stringify({spec: {replicas: parseInt(addon.replicas)}});
-        promises2.push(kubectlPatch(["deploy", deployName, "--patch", patchStr]));
+        if ("replicas" in addon) {
+          const patchStr = JSON.stringify({spec: {replicas: parseInt(addon.replicas)}});
+          promises2.push(kubectlPatch(["deploy", deployName, "--patch", patchStr]));
+        } else {
+          core2.warning(`scaling addons ${addon.name}, missing replicas in values file`);
+        }
       }
     }
   }
