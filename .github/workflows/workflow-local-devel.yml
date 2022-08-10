@@ -155,4 +155,4 @@ jobs:
         with:
           namespace: default
           regexp: "demo-cron.*"
-          suspend-state: false
+          helm-values-file: "tests/dev-cron-values.yaml"

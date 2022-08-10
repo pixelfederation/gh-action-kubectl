@@ -9284,6 +9284,8 @@ async function getCommonInputs() {
 
 // src/kubectl-helper.ts
 var exec = __toModule(require_exec());
+var fs = __toModule(require("fs"));
+var import_yaml = __toModule(require_dist());
 function getExecOpts(opt) {
   const options = opt;
   const out = {data: ""};
@@ -9297,6 +9299,31 @@ function getExecOpts(opt) {
     }
   };
   return {out, err, options};
+}
+async function readYamlValuesFile(directory, valuesFilePath) {
+  if (directory.endsWith("/")) {
+    directory = directory.slice(0, -1);
+  }
+  if (valuesFilePath.startsWith("/")) {
+    valuesFilePath = valuesFilePath.substring(1);
+  }
+  const valuesYaml = await fs.promises.readFile(`${directory}/${valuesFilePath}`, {
+    encoding: "utf8"
+  });
+  let valuesYamlParsed = "";
+  valuesYaml.split(/\r?\n/).forEach((line) => {
+    if (!line.includes("#")) {
+      valuesYamlParsed += `${line}
+`;
+    }
+  });
+  let valuesFileJson = {};
+  try {
+    valuesFileJson = import_yaml.default.parse(valuesYamlParsed);
+  } catch (err) {
+    throw new Error(err);
+  }
+  return valuesFileJson;
 }
 async function kubectlGet(args) {
   let ci;
@@ -9324,40 +9351,16 @@ async function kubectlPatch(args) {
 }
 
 // src/set-replicas-addons/index.ts
-var fs = __toModule(require("fs"));
-var import_yaml = __toModule(require_dist());
 async function setReplicasAddons() {
   let ci;
   ci = await getCommonInputs();
   const valuesFile = core2.getInput("helm-values-file", {required: true});
   const deploys = await kubectlGet(["deploy"]);
   let directory = ci.dir;
-  let valuesFilePath = valuesFile;
   if (deploys.length === 0) {
     throw new Error("Failed - setReplicasAddons, no deploy matched with regexp");
   }
-  if (directory.endsWith("/")) {
-    directory = directory.slice(0, -1);
-  }
-  if (valuesFilePath.startsWith("/")) {
-    valuesFilePath = valuesFilePath.substring(1);
-  }
-  const valuesYaml = await fs.promises.readFile(`${directory}/${valuesFilePath}`, {
-    encoding: "utf8"
-  });
-  let valuesYamlParsed = "";
-  valuesYaml.split(/\r?\n/).forEach((line) => {
-    if (!line.includes("#")) {
-      valuesYamlParsed += `${line}
-`;
-    }
-  });
-  let valuesFileJson = {};
-  try {
-    valuesFileJson = import_yaml.default.parse(valuesYamlParsed);
-  } catch (err) {
-    throw new Error(err);
-  }
+  const valuesFileJson = await readYamlValuesFile(directory, valuesFile);
   const promises2 = [];
   for (let deploy of deploys) {
     const deployName = deploy.metadata.name;

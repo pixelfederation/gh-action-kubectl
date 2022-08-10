@@ -1,10 +1,7 @@
 import * as core from "@actions/core";
 import { ICommonInputs } from "../ICommonInputs";
 import { getCommonInputs } from "../input-helper";
-import { kubectlGet, kubectlPatch } from "../kubectl-helper";
-import * as fs from "fs";
-import  YAML  from 'yaml'
-
+import { kubectlGet, kubectlPatch, readYamlValuesFile } from "../kubectl-helper";
 
 export async function setReplicasAddons() {
   let ci:ICommonInputs;
@@ -12,34 +9,13 @@ export async function setReplicasAddons() {
   const valuesFile: string = core.getInput('helm-values-file', { required: true });
   const deploys = await kubectlGet(["deploy"]);
   let directory = ci.dir;
-  let valuesFilePath = valuesFile;
 
   if (deploys.length === 0){
     throw new Error('Failed - setReplicasAddons, no deploy matched with regexp');
   }
-  if(directory.endsWith('/')) {
-    directory = directory.slice(0, -1)
-  }
 
-  if(valuesFilePath.startsWith('/')) {
-    valuesFilePath = valuesFilePath.substring(1);
-  }
+  const valuesFileJson = await readYamlValuesFile(directory, valuesFile);
 
-  const valuesYaml = await fs.promises.readFile(`${directory}/${valuesFilePath}`, {
-    encoding: "utf8",
-  });
-  let valuesYamlParsed:string = ""
-  valuesYaml.split(/\r?\n/).forEach(line =>  {
-    if(!line.includes('#')) {
-      valuesYamlParsed+= `${line}\n`;
-    }
-  });
-  let valuesFileJson = {}
-  try {
-    valuesFileJson = YAML.parse(valuesYamlParsed);
-  } catch(err) {
-    throw new Error(err);
-  }
   const promises: Array<Promise> = []
   for(let deploy of deploys) {
     const deployName:string = deploy.metadata.name;

@@ -18,6 +18,6 @@ inputs:
   kubeconfig:
     description: Path to kubeconfig
     required: false
-  suspend-state:
-    description: Cronjob desired state
+  helm-values-file:
+    description: Helm values file to get addons replicas count
     required: true

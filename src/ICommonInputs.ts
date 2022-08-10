@@ -11,4 +11,8 @@ export interface ICommonInputs {
      * Kubeconfig path
      */
     kubeconfig: string;
+    /**
+     * Working directory
+     */
+    dir: string;
 }

@@ -1,7 +1,7 @@
 jobs:
   - name: cor-comp
     enabled: true
-    suspend: true
+    suspend: false
   - name: cor-map
     enabled: true
-    suspend: true
+    suspend: false
