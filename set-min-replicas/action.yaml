@@ -2,7 +2,7 @@ name: Kubectl set hpa min replicas
 description: Set hpa min replicas
 author: Tomas Hulata <thulata@pixelfederation.com>
 runs:
-  using: node12
+  using: node16
   main: main.js
 inputs:
   directory:
