@@ -29,16 +29,16 @@ jobs:
           kubectl wait pods -n default -l k8s-app=demo-nginx --for condition=Ready --timeout=300s
           kubectl -n default get pods
 
-      - name: Get min replicas
-        id: get-min
-        uses: ./get-min-replicas
+      - name: Get replicas
+        id: get-replicas
+        uses: ./get-replicas
         with:
           namespace: default
           regexp: ".*nginx.*"
 
-      - name: Print min replicas output
+      - name: Print replicas output
         run: |
-          echo "${{ steps.get-min.outputs.replicas }}"
+          echo "${{ steps.get-replicas.outputs.replicas }}"
 
       - name: Set min replicas
         uses: ./set-min-replicas
