@@ -8,7 +8,7 @@ on:
 
 jobs:
   gh-release:
-    uses: pixelfederation/gh-action-gh-release/.github/workflows/gh-release.yaml@0.1.0
+    uses: pixelfederation/gh-action-gh-release/.github/workflows/gh-release.yaml@0.1.1
     with:
       # If enabled, respects commits between SemVer tag build num iterations instead of previous commited tag (eg: X.X.X-y_2 -> X.X.X-y_3)
       tag_num: false
