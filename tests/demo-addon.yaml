@@ -17,14 +17,14 @@ spec:
     spec:
       terminationGracePeriodSeconds: 60
       containers:
-      - name: nginx
-        image: nginx:latest
-        ports:
-        - containerPort: 80
-        resources:
-          limits:
-            cpu: 10m
-            memory: 20Mi
-          requests:
-            cpu: 10m
-            memory: 20Mi
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: 10m
+              memory: 20Mi
+            requests:
+              cpu: 10m
+              memory: 20Mi

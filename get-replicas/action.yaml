@@ -20,4 +20,4 @@ inputs:
     required: false
 outputs:
   replicas:
-    description:  Replicas count
+    description: Replicas count

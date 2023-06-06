@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       # - name: Import Secrets
       #   id: secrets
       #   uses: hashicorp/vault-action@v2.4.0
@@ -36,7 +36,6 @@ jobs:
       #     mkdir -p /home/runner/.kube
       #     echo "${{ steps.secrets.outputs.kubeconfig }}" | base64 -d > /home/runner/.kube/config
       #     chmod 600 ~/.kube/config
-
 
       - name: Kubectl version
         id: kubectl-version
@@ -60,7 +59,7 @@ jobs:
           namespace: echoheaders
           regexp: ".*echo.*"
           replicas: 2
-  
+
       - name: Get replicas
         id: get-repl2
         uses: ./get-replicas
@@ -110,7 +109,6 @@ jobs:
           regexp: "echoheaders-echoheaders-external"
           class: nginx-external
           mode: replace
-
 
   addons:
     strategy:
