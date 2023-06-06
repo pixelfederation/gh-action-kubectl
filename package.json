@@ -1,6 +1,6 @@
 {
   "name": "@kubectl/actions",
-  "version": "1.0.1",
+  "version": "0.3.0",
   "description": "kubectl pxfd actions",
   "repository": "https://github.com/asdf-vm/actions",
   "author": "Tomas Hulata <thulata@pixelfederation.com>",
