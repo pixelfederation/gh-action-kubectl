@@ -5,13 +5,19 @@ updates:
     schedule:
       interval: "monthly"
       time: "10:00"
-    assignees:
-      - "maso7"
+      timezone: "Europe/Bratislava"
+    groups:
+      all-actions-dependencies:
+        patterns:
+          - "*"
 
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: "monthly"
       time: "10:00"
-    assignees:
-      - "maso7"
+      timezone: "Europe/Bratislava"
+    groups:
+      all-npm-dependencies:
+        patterns:
+          - "*"
