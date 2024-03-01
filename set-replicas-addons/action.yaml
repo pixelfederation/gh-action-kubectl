@@ -2,7 +2,7 @@ name: Kubectl set addons replicas
 description: Set addons replicas
 author: Tomas Hulata <thulata@pixelfederation.com>
 runs:
-  using: node16
+  using: node20
   main: main.js
 inputs:
   directory:

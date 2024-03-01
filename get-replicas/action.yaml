@@ -2,7 +2,7 @@ name: Kubectl get replicas
 description: Get replicas from k8s deployment
 author: Tomas Hulata <thulata@pixelfederation.com>
 runs:
-  using: node16
+  using: node20
   main: main.js
 inputs:
   directory:
