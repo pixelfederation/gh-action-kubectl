@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.4.0] - 2024-03-01
+
+- Migration fron node18 to node20
+- Dependencies version bump
+- Fix e2e test
+
 ## [v0.3.0] - 2023-06-06
 
 - Migration fron node16 to node18
